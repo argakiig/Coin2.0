@@ -2098,7 +2098,11 @@ bool CBlock::AcceptBlock()
         return DoS(10, error("AcceptBlock() : prev block not found"));
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
-
+   
+    //new thanks rat4:)
+    if (IsProofOfWork() && nHeight > LAST_POW_BLOCK)
+        return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
+ 
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake()))
         return DoS(100, error("AcceptBlock() : incorrect %s", IsProofOfWork() ? "proof-of-work" : "proof-of-stake"));
@@ -2536,7 +2540,7 @@ bool LoadBlockIndex(bool fAllowNew)
             return false;
 
         // Genesis block
-        const char* pszTimestamp = "April 9th, 2014, Fox News: 22 Students Stabbed in High School in PA.";
+        const char* pszTimestamp = "FDA: Toxic jerky may be tied to 1K dog deaths 5/19/14";
         CTransaction txNew;
         txNew.nTime = nChainStartTime;
         txNew.vin.resize(1);
@@ -2549,9 +2553,9 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1397156460;
+        block.nTime    = 1400545857;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
-        block.nNonce   = 1133421;
+        block.nNonce   = 2512813;
 
         if (false && (block.GetHash() != hashGenesisBlock)) {
          printf("CREATE GENESIS BLOCK CODE");
@@ -2578,7 +2582,7 @@ bool LoadBlockIndex(bool fAllowNew)
         printf("block.nTime = %u \n", block.nTime);
         printf("block.nNonce = %u \n", block.nNonce);
 
-        assert(block.hashMerkleRoot == uint256("3cbd5dd7cb70f6ebe6e8a4bc730c535a38f47e54fb3857988fa9fe548e6c4a66"));
+        assert(block.hashMerkleRoot == uint256("0x11606ea845c6aa1c24eff5a9e755b79df3737bac52bc8324828995c11acabab2"));
           assert(block.GetHash() == (!fTestNet ? hashGenesisBlock : hashGenesisBlockTestNet));
 
         // Start new block file

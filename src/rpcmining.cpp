@@ -77,7 +77,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("generate",      GetBoolArg("-gen")));
     obj.push_back(Pair("genproclimit",  (int)GetArg("-genproclimit", -1)));
     obj.push_back(Pair("hashespersec",  gethashespersec(params, false)));
-	obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
+    obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
     obj.push_back(Pair("pooledtx",      (uint64_t)mempool.size()));
     obj.push_back(Pair("testnet",       fTestNet));
     return obj;
@@ -131,6 +131,9 @@ Value getworkex(const Array& params, bool fHelp)
 
     if (IsInitialBlockDownload())
         throw JSONRPCError(-10, "Coin2.0 is downloading blocks...");
+
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;
@@ -265,6 +268,10 @@ Value getwork(const Array& params, bool fHelp)
 
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Coin2.0 is downloading blocks...");
+
+
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
@@ -409,6 +416,9 @@ Value getblocktemplate(const Array& params, bool fHelp)
 
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Coin2.0 is downloading blocks...");
+
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     static CReserveKey reservekey(pwalletMain);
 
